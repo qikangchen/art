@@ -9,10 +9,12 @@ function setup() {
   frameRate(FPS)
   createCanvas(980, 980)
 
-  capturer = new CCapture({ format: 'png', framerate: FPS, verbose:true }) 
-  eye_matrix = new EyeMatrix()
+  if(CAPTURE){
+    capturer = new CCapture({ format: 'png', framerate: FPS, verbose:true }) 
+  }
 
-  // noLoop()
+  // eye_matrix = new EyeMatrixTutorial()
+  eye_matrix = new EyeMatrix()
 }
 
 function draw(){
@@ -20,7 +22,8 @@ function draw(){
     capturer.start()
     print("start")
   }
-  if(CAPTURE & frameCount == FPS*10){
+  // if(CAPTURE & frameCount == FPS*10){
+  if(CAPTURE & frameCount == 565){
     print("end")
     noLoop()
     capturer.stop()
@@ -37,5 +40,7 @@ function draw(){
 
 function drawEyes(){
   background(100)
-  eye_matrix.draw()
+  let second = floor(frameCount/FPS)
+  // print(second, frameCount)
+  eye_matrix.draw(second)
 }
