@@ -1,4 +1,5 @@
-FPS = 60
+const CAPTURE = false
+const FPS = 60
 const SCALE = 10
 
 const NOISE_INCREMENT = 0.1
@@ -8,9 +9,13 @@ const FORCE_FIELD_NOISE_SCALE = 4
 const PARTICLE_AMOUNT = 300
 const MAX_SPEED = 4
 
-var cols, rows
-let z_off = 0
-let particles = []
+let font
+let particles
+let drawer
+
+function preload(){
+  font = loadFont('../fonts/SourceSansPro-Regular.ttf')
+}
 
 function setup(){
   frameRate(FPS)
@@ -18,65 +23,39 @@ function setup(){
   cols = floor(width/SCALE) + 1
   rows = floor(height/SCALE) + 1
 
-  for (let i = 0; i < PARTICLE_AMOUNT; i++) {
-    particles.push(new Particle(SCALE, MAX_SPEED))    
+  drawer = new Drawer(rows, cols, SCALE, FORCE_FIELD_NOISE_SCALE, NOISE_INCREMENT, Z_NOISE_INCREMENT, PARTICLE_AMOUNT, MAX_SPEED)
+  // drawer = new DrawerTutorial(rows, cols, SCALE, FORCE_FIELD_NOISE_SCALE, NOISE_INCREMENT, Z_NOISE_INCREMENT, PARTICLE_AMOUNT, MAX_SPEED, font)
+
+  if(CAPTURE){
+    capturer = new CCapture({ format: 'png', framerate: FPS, verbose:true }) 
   }
-  // noLoop()
 
   noiseSeed(0)
   background(0)
+
+  // noLoop()
 }
 
 function draw(){
-  // background(0)
-
-  let force_field = createForceField()
-
-  for (let i = 0; i < particles.length; i++) {
-    let particle = particles[i]
-    particle.applyForceField(force_field)
-    particle.update()
-    particle.draw()
+  if(CAPTURE && frameCount == 1){
+    capturer.start()
   }
-}
 
-function createForceField() {
-  let force_field = new Array(rows)
-  let y_off = 0
-  for (let y = 0; y < rows; y++) {
-    force_field[y] = new Array(cols)
-    let x_off = 0
-    for (let x = 0; x < cols; x++) {
-      let n = noise(x_off, y_off, z_off)
-      let angle =  n * TWO_PI * FORCE_FIELD_NOISE_SCALE
-      let v = p5.Vector.fromAngle(angle)
-      v.mag(1)
+  let second = floor(frameCount/FPS)
+  let frame = frameCount % FPS
+  // print(second, frame)
+  let keep_going = drawer.draw(second, frame)
 
-      // drawNoise(x, y, n)
-      // // wForceField(x, y, v)
-
-      force_field[y][x] = v
-      x_off += NOISE_INCREMENT
+  if(keep_going == false){
+    if(CAPTURE){
+      noLoop()
+      capturer.stop()
+      capturer.save()
     }
-    y_off += NOISE_INCREMENT
-    z_off += Z_NOISE_INCREMENT
+    noLoop()
   }
 
-  return force_field
-}
-
-function drawNoise(x, y, n){
-  fill(n*255)
-  strokeWeight(0.1)
-  rect(x*SCALE, y*SCALE, SCALE, SCALE)
-}
-
-function drawForceField(x, y, v) {
-  push()
-  stroke(200, 100)
-  strokeWeight(2)
-  translate(x * SCALE, y * SCALE)
-  rotate(v.heading())
-  line(0, 0, SCALE, 0)
-  pop()
+  if(CAPTURE){
+    capturer.capture(document.getElementById('defaultCanvas0'));
+  }
 }

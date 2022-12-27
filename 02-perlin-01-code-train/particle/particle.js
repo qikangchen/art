@@ -1,6 +1,5 @@
 class Particle{
 
-    
     constructor(scale, max_speed){
         this.scale = scale
 
@@ -54,9 +53,9 @@ class Particle{
         }
     }
 
-    draw(){
-        stroke(255, 5)
-        strokeWeight(1)
+    draw(stroke_weight, alpha){
+        stroke(255, alpha)
+        strokeWeight(stroke_weight)
         line(this.pos_prev.x, this.pos_prev.y, this.pos.x, this.pos.y)
     }
 
