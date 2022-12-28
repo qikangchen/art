@@ -31,7 +31,7 @@ class Eye{
 
   drawEyeBall() {
     stroke(0)
-    fill(200)
+    fill(255)
     strokeWeight(2)
     circle(this.x, this.y, this.radius1 * 2)
   }
