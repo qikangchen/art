@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "start": "node_modules/.bin/browser-sync start --server -f -w"
+  },
+  "dependencies": {
+    "ccapture.js": "^1.1.0",
+    "p5.grain": "^0.6.1"
+  }
+}
